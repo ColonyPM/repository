@@ -1,1 +1,1 @@
-# cpm-registry
+# cpm-repository
