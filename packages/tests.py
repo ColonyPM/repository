@@ -10,4 +10,4 @@ class PingEndpointTests(TestCase):
         response = cast(HttpResponse, self.client.get("/api/packages/ping/"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content), {"message": "ping"})
+        self.assertEqual(json.loads(response.content), {"message": "pong"})
