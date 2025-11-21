@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Register{% endblock %}
+{% block navbar %}
+{% endblock %}
+{% block page_body %}
+
+<style>
+    /* same CSS as in login.html */
+    .auth-card {
+        width: 420px;
+        max-width: 100%;
+        background-color: #050816;
+        border-radius: 1.5rem;
+    }
+
+    .auth-card input[type="text"],
+    .auth-card input[type="password"],
+    .auth-card input[type="email"] {
+        width: 100%;
+        display: block;
+        padding: 0.45rem 0.75rem;
+        border-radius: 0.25rem;
+        background-color: #050816;
+        border: 1px solid #383d4f;
+        color: #f8f9fa;
+        font-size: 0.85rem;
+    }
+
+    .auth-card input::placeholder {
+        color: #9ca3b8;
+        font-size: 0.8rem;
+    }
+</style>
+
+<div class="min-vh-100 d-flex align-items-center justify-content-center"
+     style="background: radial-gradient(circle at top left, #0b5664 0, #021521 55%, #000810 100%);">
+
+    <div class="card auth-card shadow-lg border-0 px-4 py-3">
+
+        <div class="text-center mb-2">
+            <img src="{% static 'images/colonyPM.png' %}" alt="ColonyPM logo"
+                 class="mb-2" style="width: 120px; height: auto;">
+        </div>
+
+        <h2 class="text-center mb-3 fw-semibold" style="color:#19a7aa;">
+            Create Account
+        </h2>
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger py-2 mb-2">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}"
+                           class="form-label text-light small mb-1">
+                        {{ field.label }}
+                    </label>
+
+                    <input
+                        type="{{ field.field.widget.input_type|default:'text' }}"
+                        name="{{ field.html_name }}"
+                        id="{{ field.id_for_label }}"
+                        value="{{ field.value|default_if_none:'' }}"
+                        placeholder="{{ field.label }}"
+                    >
+
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+
+                    {% if field.help_text and field.name == 'password1' and field.errors %}
+                        <div class="form-text text-muted small">
+                            {{ field.help_text|safe }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit"
+                    class="btn w-100 mb-2 fw-semibold text-light"
+                    style="background:#7b5cff; border-color:#7b5cff;">
+                Register
+            </button>
+
+            <a href="{% url 'login' %}"
+               class="btn btn-outline-secondary w-100 fw-semibold"
+               style="border-color:#2c3344; color:#f8f9fa;">
+                Already have an account? Log in
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock page_body %}
