@@ -1,100 +1,78 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Login{% endblock %}
-{% block navbar %}
-{% endblock %}
+{% block navbar %}{% endblock %}
+
 {% block page_body %}
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
 
-<style>
-    /* paste shared auth-card CSS here */
-    .auth-card {
-        width: 420px;
-        max-width: 100%;
-        background-color: #050816;
-        border-radius: 1.5rem;
-    }
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+        <div class="card bg-body-secondary border-0 shadow-lg">
+            <div class="card-body p-4">
 
-    .auth-card input[type="text"],
-    .auth-card input[type="password"],
-    .auth-card input[type="email"] {
-        width: 100%;
-        display: block;
-        padding: 0.45rem 0.75rem;
-        border-radius: 0.25rem;
-        background-color: #050816;
-        border: 1px solid #383d4f;
-        color: #f8f9fa;
-        font-size: 0.85rem;
-    }
+                <!-- Circular avatar + title -->
+                <div class="text-center mb-3">
+                    <div class="d-inline-block rounded-circle overflow-hidden bg-body-tertiary"
+                         style="width: 140px; height: 140px;">
+                        <img src="{% static 'images/colonyPM.jpg' %}"
+                             alt="ColonyPM logo"
+                             class="w-100 h-100 object-fit-cover">
+                    </div>
+                </div>
 
-    .auth-card input::placeholder {
-        color: #9ca3b8;
-        font-size: 0.8rem;
-    }
-</style>
 
-<div class="min-vh-100 d-flex align-items-center justify-content-center"
-     style="background: radial-gradient(circle at top left, #0b5664 0, #021521 55%, #000810 100%);">
+                <!-- Error message -->
+                {% if form.errors %}
+                    <div class="alert bg-danger bg-opacity-60 text-white py-2 mb-3" role="alert">
+                        Invalid username or password.
+                    </div>
+                {% endif %}
 
-    <div class="card auth-card shadow-lg border-0 px-4 py-3">
+                <!-- Form -->
+                <form method="post" novalidate>
+                    {% csrf_token %}
 
-        <div class="text-center mb-2">
-            <img src="{% static 'images/colonyPM.png' %}" alt="ColonyPM logo"
-                 class="mb-2" style="width: 120px; height: auto;">
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">
+                            {{ form.username.label }}
+                        </label>
+                        <input
+                            type="text"
+                            name="{{ form.username.html_name }}"
+                            id="{{ form.username.id_for_label }}"
+                            value="{{ form.username.value|default_if_none:'' }}"
+                            class="form-control"
+                            placeholder="Enter username"
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">
+                            {{ form.password.label }}
+                        </label>
+                        <input
+                            type="password"
+                            name="{{ form.password.html_name }}"
+                            id="{{ form.password.id_for_label }}"
+                            class="form-control"
+                            placeholder="Enter password"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-light text-dark w-100 mb-3">
+                        Sign In
+                    </button>
+
+                    <div class="text-center">
+                        <a href="{% url 'register' %}" class="link-light text-decoration-none">
+                            Create Account
+                        </a>
+                    </div>
+                </form>
+
+            </div>
         </div>
-
-        <h2 class="text-center mb-3 fw-semibold" style="color:#19a7aa;">
-            Login
-        </h2>
-
-        {% if form.errors %}
-            <div class="alert alert-danger py-2 mb-2">
-                Invalid username or password.
-            </div>
-        {% endif %}
-
-        <form method="post" novalidate>
-            {% csrf_token %}
-
-            <div class="mb-2">
-                <label for="{{ form.username.id_for_label }}"
-                       class="form-label text-light small mb-1">
-                    {{ form.username.label }}
-                </label>
-                <input
-                    type="text"
-                    name="{{ form.username.html_name }}"
-                    id="{{ form.username.id_for_label }}"
-                    value="{{ form.username.value|default_if_none:'' }}"
-                    placeholder="Enter username"
-                >
-            </div>
-
-            <div class="mb-3">
-                <label for="{{ form.password.id_for_label }}"
-                       class="form-label text-light small mb-1">
-                    {{ form.password.label }}
-                </label>
-                <input
-                    type="password"
-                    name="{{ form.password.html_name }}"
-                    id="{{ form.password.id_for_label }}"
-                    placeholder="Enter password"
-                >
-            </div>
-
-            <button type="submit"
-                    class="btn w-100 mb-2 fw-semibold text-light"
-                    style="background:#7b5cff; border-color:#7b5cff;">
-                Login
-            </button>
-
-            <a href="{% url 'register' %}"
-               class="btn btn-outline-secondary w-100 fw-semibold"
-               style="border-color:#2c3344; color:#f8f9fa;">
-                Create Account
-            </a>
-        </form>
     </div>
+
 </div>
 {% endblock page_body %}
