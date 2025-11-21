@@ -5,7 +5,7 @@ from ninja import NinjaAPI
 from packages.api import router as packages_router
 from users.api import router as users_router
 
-api = NinjaAPI(title="CPM API")
+api = NinjaAPI(title="CPM API", urls_namespace="api")
 
 api.add_router("/users/", users_router)
 api.add_router("/packages/", packages_router)

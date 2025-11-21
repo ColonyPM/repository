@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ profile_user.username }} - cpm{% endblock %}
+
+{% block extra_head %}
+    <script type="module" src="{% static 'js/upload-token-box.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<style>
+  body {
+    background-color: #212529 !important;
+    color: #fff;
+  }
+
+  .card-dark {
+    background-color: #212529 !important;
+    border: 1px solid #2A3441 !important;
+    border-radius: 0.5rem !important;
+  }
+
+  .label-muted {
+    color: #9ca3af !important;
+  }
+
+  .breadcrumb-name {
+    color: #9fa3a7 !important;
+  }
+
+  .package-item {
+    border-radius: 0.5rem;
+    border: 1px solid #2A3441;
+    background-color: #1f2429;
+    text-decoration: none;
+  }
+
+  .package-item:hover {
+    text-decoration: none;
+    background-color: #242a30;
+  }
+
+  /* new: softer dashboard-style button */
+  .btn-token {
+    background-color: #2a3441;
+    border-color: #3b4252;
+    color: #e5e7eb;
+    font-size: 0.85rem;
+  }
+
+  .btn-token:hover {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+</style>
+
+
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <span class="breadcrumb-name">Profile</span>
+          <h1 class="h2 mt-2 mb-0">
+            {{ profile_user.username }}
+          </h1>
+          <p class="mb-0 small label-muted">
+            Joined {{ profile_user.date_joined|date:"M d, Y" }}
+          </p>
+        </div>
+
+        <div class="text-end">
+          <div class="small label-muted">Packages</div>
+          <div class="h4 mb-0">
+            {{ packages|length }}
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <!-- LEFT COLUMN: profile / stats / owner-only -->
+        <div class="col-lg-4">
+
+          <!-- Owner-only block -->
+          {% if is_own_profile %}
+            <div class="card card-dark text-light mb-3">
+              <div class="card-body small">
+                <h6 class="text-uppercase label-muted mb-2">Your dashboard</h6>
+                <button type="button"
+                        class="btn btn-token px-4"
+                        data-bs-toggle="modal"
+                        data-bs-target="#uploadTokenModal">
+                Generate upload token
+                </button>
+              </div>
+            </div>
+          {% endif %}
+
+
+        </div>
+
+        <!-- RIGHT COLUMN: packages list -->
+        <div class="col-lg-8">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0">
+              Packages by {{ profile_user.username }}
+            </h5>
+            <a href="{% url 'packages' %}" class="small text-decoration-none">
+              Browse all packages →
+            </a>
+          </div>
+
+          {% if packages %}
+            <div class="d-flex flex-column gap-2">
+              {% for pkg in packages %}
+                <a
+                  class="package-item p-3 text-light d-block"
+                  href="{% url 'package-details' slug=pkg.slug %}"
+                >
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="me-3">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="fw-semibold">{{ pkg.name }}</span>
+                        <span class="badge rounded-pill bg-secondary">
+                          {{ pkg.version }}
+                        </span>
+                        {% if pkg.deprecated %}
+                          <span class="badge rounded-pill bg-danger">
+                            Deprecated
+                          </span>
+                        {% endif %}
+                      </div>
+
+                      <div class="small label-muted text-truncate" style="max-width: 420px;">
+                        {{ pkg.description|default:"No description provided." }}
+                      </div>
+                    </div>
+
+                    <div class="text-end small">
+                      <div class="label-muted">
+                        {{ pkg.download_count }} downloads
+                      </div>
+                      <div class="label-muted">
+                        Created {{ pkg.created_at|date:"M d, Y" }}
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="card card-dark text-light">
+              <div class="card-body">
+                <p class="mb-1">
+                  {% if is_own_profile %}
+                    You haven't published any packages yet.
+                  {% else %}
+                    {{ profile_user.username }} hasn't published any packages yet.
+                  {% endif %}
+                </p>
+                {% if is_own_profile %}
+                  <p class="mb-0 small label-muted">
+                    Once you publish a package, it will show up here.
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% if is_own_profile %}
+<div class="modal fade" id="uploadTokenModal" tabindex="-1" aria-labelledby="uploadTokenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark border-secondary text-light">
+        <div class="modal-header">
+        <h5 class="modal-title" id="uploadTokenModalLabel">Generate upload token</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        <upload-token-box
+            endpoint="{% url 'api:generate-upload-token' %}"
+            lifetime="30">
+        </upload-token-box>
+        </div>
+    </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}
