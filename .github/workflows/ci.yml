@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_CLIENT_ID: ${{ secrets.G_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.G_SECRET }}
 
     steps:
       - name: Checkout code
