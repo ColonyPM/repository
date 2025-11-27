@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Packages{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/packages.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<div class="my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h1 class="h3 mb-1">Packages</h1>
+          {% if request.GET.q %}
+            <p class="small label-muted mb-0">
+              Showing results for "<strong>{{ request.GET.q }}</strong>" · {{ object_list|length }} found
+            </p>
+          {% endif %}
+        </div>
+      </div>
+
+
+      <!-- Package Cards -->
+      {% if object_list %}
+        {% include "packages/package_card.html" %}
+      {% else %}
+
+      <!-- No Packages Found -->
+        <div class="card card-dark text-light">
+          <div class="card-body">
+            {% if request.GET.q %}
+              <p class="mb-1">
+                No packages found for "<strong>{{ request.GET.q }}</strong>".
+              </p>
+              <p class="mb-0 small label-muted">
+                Try changing or clearing your search.
+              </p>
+            {% else %}
+              <p class="mb-1">No packages yet.</p>
+              <p class="mb-0 small label-muted">
+                Once someone publishes a package, it will appear here.
+              </p>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock content %}

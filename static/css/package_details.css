@@ -1,0 +1,26 @@
+.card-dark {
+    background-color: #212529 !important;
+    border: 1px solid #2a3441 !important;
+    border-radius: 0.5rem !important;
+}
+
+.markdown-body pre {
+    background-color: #383d43 !important;
+    border-radius: 0.5rem;
+}
+
+.label-muted {
+    color: #9ca3af !important;
+}
+
+.breadcrumb-name {
+    color: #9fa3a7 !important;
+}
+
+.btn-sm:hover {
+    border: 1px solid #67366452 !important;
+}
+
+.btn-sm:after {
+    background-color: #ffffff !important;
+}

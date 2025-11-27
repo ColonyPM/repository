@@ -1,0 +1,29 @@
+.card-dark {
+    background-color: #212529 !important;
+    border: 1px solid #2a3441 !important;
+    border-radius: 0.5rem !important;
+}
+
+.label-muted {
+    color: #9ca3af !important;
+}
+
+.search-bar {
+    border-radius: 0.5rem;
+    border: 1px solid #2a3441;
+    background-color: #212529;
+    color: #fff;
+    padding: 10px;
+}
+
+.search-bar input {
+    background: none;
+    border: none;
+    color: inherit;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.search-bar input::placeholder {
+    color: #9ca3af;
+}
