@@ -15,4 +15,5 @@ urlpatterns = [
     path("api/", api.urls),
     path("users/", include("users.urls")),
     path("packages/", include("packages.urls")),
+    path("accounts/", include("allauth.urls")),
 ]

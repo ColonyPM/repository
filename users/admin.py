@@ -2,20 +2,27 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 
-from .forms import CustomUserChangeForm, CustomUserCreationForm
+from .forms import CustomUserChangeForm
 from .models import User
 
 
 class CustomUserAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = User
 
-    list_display = ("username", "is_staff", "is_active", "is_superuser")
+    list_display = (
+        "username",
+        "avatar",
+        "is_staff",
+        "is_active",
+        "is_superuser",
+    )
     list_filter = ("is_staff", "is_active", "is_superuser")
+    search_fields = ("username",)
+    ordering = ("username",)
 
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
+        (None, {"fields": ("username", "avatar", "password")}),
         (
             "Permissions",
             {"fields": ("is_staff", "is_active", "is_superuser")},
@@ -28,22 +35,13 @@ class CustomUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": (
-                    "username",
-                    "password1",
-                    "password2",
-                    "is_staff",
-                    "is_active",
-                    "is_superuser",
-                ),
+                "fields": ("username", "password1", "password2"),
             },
         ),
     )
 
-    search_fields = ("username",)
-    ordering = ("username",)
+    filter_horizontal = []
 
 
 admin.site.register(User, CustomUserAdmin)
-
 admin.site.unregister(Group)

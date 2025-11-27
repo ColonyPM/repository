@@ -1,0 +1,26 @@
+.browse-all-link {
+    color: #007bff; /* Matching the blue color for the link */
+    text-decoration: none;
+}
+
+.browse-all-link:hover {
+    text-decoration: underline; /* Adding hover effect for the link */
+}
+
+/* Move profile info more to the left */
+.profile-info {
+    margin-right: 50px; /* Adjust this margin to your preference */
+}
+
+/* Center the profile info card */
+.profile-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.package-count {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffffff;
+}

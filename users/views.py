@@ -1,6 +1,6 @@
+from allauth.account.views import LoginView
 from django.contrib.auth import get_user_model, login
-from django.contrib.auth.views import LoginView
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView
 
@@ -9,21 +9,8 @@ from .forms import CustomUserCreationForm
 User = get_user_model()
 
 
-class CustomLoginView(LoginView):
-    template_name = "users/login.html"
-    redirect_authenticated_user = True
-
-
-class RegisterView(CreateView):
-    model = User
-    form_class = CustomUserCreationForm
-    template_name = "users/register.html"
-    success_url = reverse_lazy("packages")
-
-    def form_valid(self, form):
-        user = form.save()
-        login(self.request, user)
-        return redirect("packages")
+def login_view(request):
+    return render(request, "users/login.html")
 
 
 class ProfileView(DetailView):
