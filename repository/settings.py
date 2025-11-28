@@ -162,8 +162,8 @@ SOCIALACCOUNT_PROVIDERS = {
             "user",
         ],
         "APP": {
-            "client_id": env("GH_CLIENT_ID"),
-            "secret": env("GH_CLIENT_SECRET"),
+            "client_id": env("GH_CLIENT_ID", default="dummy"),
+            "secret": env("GH_CLIENT_SECRET", default="dummy"),
             "key": "",
         },
     }
