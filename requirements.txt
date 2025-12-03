@@ -16,6 +16,7 @@ django-types==0.22.0
 idna==3.11
 Markdown==3.10
 oauthlib==3.3.1
+psycopg2-binary==2.9.10
 pycparser==2.23
 pydantic==2.12.4
 pydantic_core==2.41.5

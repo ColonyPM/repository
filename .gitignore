@@ -5,15 +5,18 @@ __pycache__/
 
 # Django specific
 db.sqlite3
-/media/
+media/
 *.log
 
 # Virtual environment
 venv/
-.env/
 
 # Docker files
 *.dockerfile
 docker-compose.override.yml
 
+# Environment files (keep only examples in git)
 .env
+.env.*
+*.env
+!*.env.example

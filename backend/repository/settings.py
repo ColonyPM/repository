@@ -1,31 +1,43 @@
-import os
 from pathlib import Path
 
 import environ
 
-env = environ.Env()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = BASE_DIR.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+env = environ.Env(
+    DEBUG=(bool, True),
+)
+
+env_files = [BASE_DIR / ".env", PROJECT_ROOT / ".env"]
+for env_file in env_files:
+    if env_file.exists():
+        environ.Env.read_env(env_file)
+        break
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-5h_1+0w$%jvq2)tvh5#gcv2q#e90d4k#6^d3$9t*i8)p2lg@8q"
+SECRET_KEY = env(
+    "SECRET_KEY",
+    default="django-insecure-5h_1+0w$%jvq2)tvh5#gcv2q#e90d4k#6^d3$9t*i8)p2lg@8q",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["*"])
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.ngrok.io",
-    "https://*.ngrok-free.app",
-    "https://*.ngrok-free.dev",
-]
+CSRF_TRUSTED_ORIGINS = env.list(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    default=[
+        "https://*.ngrok.io",
+        "https://*.ngrok-free.app",
+        "https://*.ngrok-free.dev",
+    ],
+)
 
 # Application definition
 
@@ -85,12 +97,28 @@ WSGI_APPLICATION = "repository.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+default_sqlite_path = (
+    PROJECT_ROOT / "db.sqlite3"
+    if (PROJECT_ROOT / "db.sqlite3").exists() and not (BASE_DIR / "db.sqlite3").exists()
+    else BASE_DIR / "db.sqlite3"
+)
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": default_sqlite_path,
     }
 }
+
+if env("POSTGRES_HOST", default=None):
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("POSTGRES_DB", default="postgres"),
+        "USER": env("POSTGRES_USER", default="postgres"),
+        "PASSWORD": env("POSTGRES_PASSWORD", default=""),
+        "HOST": env("POSTGRES_HOST"),
+        "PORT": env("POSTGRES_PORT", default="5432"),
+    }
 
 
 # Password validation
@@ -124,9 +152,10 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    BASE_DIR / "static",
 ]
 
 # Default primary key field type

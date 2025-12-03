@@ -9,6 +9,12 @@
     border-radius: 0.5rem;
 }
 
+.markdown-body img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
 .label-muted {
     color: #9ca3af !important;
 }

@@ -37,7 +37,7 @@ jobs:
       - name: Run Django tests with coverage
         run: |
           source venv/bin/activate  # Activate the venv before running tests
-          coverage run manage.py test  # Run tests with coverage
+          coverage run backend/manage.py test  # Run tests with coverage
           coverage report  # Show coverage in the logs (optional)
           coverage xml -o coverage.xml  # Generate XML report for upload
 
