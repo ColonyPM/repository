@@ -11,7 +11,7 @@ api.add_router("/users/", users_router)
 api.add_router("/packages/", packages_router)
 
 urlpatterns = [
-    path("", RedirectView.as_view(url="/packages/", permanent=False)),
+    path("", RedirectView.as_view(pattern_name="packages", permanent=False)),
     path("admin/", admin.site.urls),
     path("api/", api.urls),
     path("users/", include("users.urls")),
