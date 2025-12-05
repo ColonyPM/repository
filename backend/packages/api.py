@@ -25,6 +25,18 @@ MANIFEST_SCHEMA = ManifestSchema(
         "description": str,
         "author": str,
         Optional("deprecated"): bool,
+        Optional("deploy"): {
+            Optional("functionSpecs"): [str],
+            Optional("workflows"): [str],
+            Optional("executors"): [
+                {
+                    "name": str,
+                    "img": str,
+                }
+            ],
+            Optional("setup"): [str],
+            Optional("teardown"): [str],
+        },
     }
 )
 
@@ -58,33 +70,33 @@ def parse_package_archive(archive_file):
                     raise HttpError(400, "archive must contain a single root directory")
 
             if not roots:
-                raise HttpError(400, "package.yml is missing")
+                raise HttpError(400, "package.yaml is missing")
 
             root_dir = roots.pop()
 
             try:
-                manifest_member = tar.getmember(f"{root_dir}/package.yml")
+                manifest_member = tar.getmember(f"{root_dir}/package.yaml")
             except KeyError:
-                raise HttpError(400, "package.yml is missing")
+                raise HttpError(400, "package.yaml is missing")
 
             manifest_f = tar.extractfile(manifest_member)
             if manifest_f is None:
-                raise HttpError(400, "could not read package.yml from the archive")
+                raise HttpError(400, "could not read package.yaml from the archive")
 
             manifest_raw = manifest_f.read().decode("utf-8")
 
             try:
                 manifest_data = yaml.safe_load(manifest_raw)
             except yaml.YAMLError as e:
-                raise HttpError(400, f"package.yml is not valid YAML: {e}")
+                raise HttpError(400, f"package.yaml is not valid YAML: {e}")
 
             if not isinstance(manifest_data, dict):
-                raise HttpError(400, "package.yml must contain a mapping/object")
+                raise HttpError(400, "package.yaml must contain a mapping/object")
 
             try:
                 manifest_content = MANIFEST_SCHEMA.validate(manifest_data)
             except SchemaError as e:
-                raise HttpError(400, f"invalid package.yml: {e}")
+                raise HttpError(400, f"invalid package.yaml: {e}")
 
             readme_content = ""
             try:
