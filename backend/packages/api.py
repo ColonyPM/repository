@@ -3,9 +3,14 @@ from datetime import timedelta
 from typing import List
 
 import yaml
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.contrib.postgres.search import (
+    SearchQuery,
+    SearchRank,
+    SearchVector,
+    TrigramSimilarity,
+)
 from django.db import IntegrityError
-from django.db.models import Count
+from django.db.models import Count, F, Q
 from django.db.models.functions import TruncDay
 from django.http import FileResponse
 from django.urls import reverse
@@ -225,13 +230,15 @@ def list_packages(request, q: str):
         + SearchVector("description", weight="B")
         + SearchVector("author", weight="C")
     )
-
     search_query = SearchQuery(q)
 
     packages = (
-        Package.objects.annotate(rank=SearchRank(vector, search_query))
-        .filter(rank__gt=0)
-        .order_by("-rank")
+        Package.objects.annotate(
+            rank=SearchRank(vector, search_query),
+            similarity=TrigramSimilarity("name", q),
+        )
+        .filter(Q(rank__gt=0.1) | Q(similarity__gt=0.3))
+        .order_by("-rank", "-similarity")
         .values_list("name", flat=True)
     )
 
