@@ -1,8 +1,9 @@
-import gzip
 import tarfile
 from datetime import timedelta
+from typing import List
 
 import yaml
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db import IntegrityError
 from django.db.models import Count
 from django.db.models.functions import TruncDay
@@ -215,3 +216,23 @@ def package_download_stats(request, slug: str):
         current += timedelta(days=1)
 
     return DownloadSeries(labels=labels, data=data, total=sum(data))
+
+
+@router.get("/packages", response=list[str], url_name="package-search")
+def list_packages(request, q: str):
+    vector = (
+        SearchVector("name", weight="A")
+        + SearchVector("description", weight="B")
+        + SearchVector("author", weight="C")
+    )
+
+    search_query = SearchQuery(q)
+
+    packages = (
+        Package.objects.annotate(rank=SearchRank(vector, search_query))
+        .filter(rank__gt=0)
+        .order_by("-rank")
+        .values_list("name", flat=True)
+    )
+
+    return list(packages[:10])

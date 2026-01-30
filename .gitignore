@@ -10,6 +10,7 @@ media/
 
 # Virtual environment
 venv/
+.venv/
 
 # Docker files
 *.dockerfile
@@ -20,3 +21,5 @@ docker-compose.override.yml
 .env.*
 *.env
 !*.env.example
+
+staticfiles/
