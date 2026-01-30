@@ -10,7 +10,7 @@ from django.contrib.postgres.search import (
     TrigramSimilarity,
 )
 from django.db import IntegrityError
-from django.db.models import Count, F, Q
+from django.db.models import Case, F, FloatField, Q, Value, When
 from django.db.models.functions import TruncDay
 from django.http import FileResponse
 from django.urls import reverse
@@ -225,6 +225,7 @@ def package_download_stats(request, slug: str):
 
 @router.get("/packages", response=list[str], url_name="package-search")
 def list_packages(request, q: str):
+    # 1. Setup Postgres Full-Text Search
     vector = (
         SearchVector("name", weight="A")
         + SearchVector("description", weight="B")
@@ -235,10 +236,15 @@ def list_packages(request, q: str):
     packages = (
         Package.objects.annotate(
             rank=SearchRank(vector, search_query),
-            similarity=TrigramSimilarity("name", q),
+            substring_bonus=Case(
+                When(name__icontains=q, then=Value(0.5)),
+                default=Value(0.0),
+                output_field=FloatField(),
+            ),
         )
-        .filter(Q(rank__gt=0.1) | Q(similarity__gt=0.3))
-        .order_by("-rank", "-similarity")
+        .filter(Q(rank__gt=0) | Q(name__icontains=q))
+        .annotate(final_score=F("rank") + F("substring_bonus"))
+        .order_by("-final_score")
         .values_list("name", flat=True)
     )
 
