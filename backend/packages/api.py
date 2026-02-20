@@ -69,19 +69,18 @@ def parse_package_archive(archive_file):
                 parts = [p for p in name.split("/") if p]
                 if not parts:
                     continue
-                if len(parts) < 2:
-                    raise HttpError(400, "archive must contain a single root directory")
+                # if len(parts) < 2:
+                #     raise HttpError(400, "archive must contain a single root directory")
                 roots.add(parts[0])
-                if len(roots) > 1:
-                    raise HttpError(400, "archive must contain a single root directory")
+                # if len(roots) > 1:
+                #     raise HttpError(400, "archive must contain a single root directory")
 
             if not roots:
                 raise HttpError(400, "package.yaml is missing")
 
-            root_dir = roots.pop()
 
             try:
-                manifest_member = tar.getmember(f"{root_dir}/package.yaml")
+                manifest_member = tar.getmember(f"package.yaml")
             except KeyError:
                 raise HttpError(400, "package.yaml is missing")
 
@@ -106,7 +105,7 @@ def parse_package_archive(archive_file):
 
             readme_content = ""
             try:
-                readme_member = tar.getmember(f"{root_dir}/readme.md")
+                readme_member = tar.getmember(f"readme.md")
             except KeyError:
                 readme_f = None
             else:
