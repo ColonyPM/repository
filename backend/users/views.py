@@ -1,10 +1,8 @@
-from allauth.account.views import LoginView
-from django.contrib.auth import get_user_model, login
-from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
-
-from .forms import CustomUserCreationForm
+from django.contrib.auth import get_user_model
+from django.db.models import Count, OuterRef, Q, Subquery
+from django.shortcuts import render
+from django.views.generic import DetailView
+from packages.models import Package, PackageVersion
 
 User = get_user_model()
 
@@ -25,7 +23,20 @@ class ProfileView(DetailView):
 
         profile_user = self.object
 
-        context["packages"] = profile_user.packages.all().order_by("-created_at")
+        latest_version_sq = (
+            PackageVersion.objects.filter(package=OuterRef("pk"))
+            .order_by("-major", "-minor", "-patch")
+            .values("version")[:1]
+        )
+
+        context["packages"] = (
+            Package.objects.filter(owner=profile_user)
+            .annotate(
+                latest_version=Subquery(latest_version_sq),
+                download_count=Count("versions__downloads"),
+            )
+            .order_by("-created_at")
+        )
 
         context["is_own_profile"] = (
             self.request.user.is_authenticated

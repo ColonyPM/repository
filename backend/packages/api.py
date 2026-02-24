@@ -104,16 +104,8 @@ def parse_package_archive(archive_file):
                 raise HttpError(400, f"invalid package.yaml: {e}")
 
             readme_content = ""
-<<<<<<< HEAD
-            try:
-                readme_member = tar.getmember(f"readme.md")
-            except KeyError:
-                readme_f = None
-            else:
-=======
             readme_member = member_by_path.get("readme.md")
             if readme_member is not None:
->>>>>>> 60012e7 (feat: versioning)
                 readme_f = tar.extractfile(readme_member)
                 if readme_f is not None:
                     readme_content = readme_f.read().decode("utf-8", errors="replace")
