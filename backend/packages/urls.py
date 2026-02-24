@@ -12,4 +12,9 @@ urlpatterns = [
         name="packages_search_results",
     ),
     path("<slug:slug>/", PackageDetailView.as_view(), name="package-details"),
+    path(
+        "<slug:slug>/<str:version>/",
+        PackageDetailView.as_view(),
+        name="package-version-details",
+    ),
 ]

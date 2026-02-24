@@ -2,7 +2,10 @@
 {% load markdownify %}
 {%load static%}
 
-{% block title %}{{ object.name }} - cpm{% endblock %}
+{% block title %}
+    {{ object.name }} - cpm
+{% endblock %}
+
 {% block extra_head %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 
@@ -17,23 +20,34 @@
   <div class="row justify-content-center">
     <div class="col-lg-10">
 
-      <!-- Breadcrumb -->
-      <div class="d-flex justify-content-between align-items-start mb-3">
-        <div>
-          <a href="{% url 'packages' %}">
-            <span class="text-primary" style="color: rgb(84 123 182);">Packages</span>
-          </a>
-          <span class="breadcrumb-name"> / {{ object.name }}</span>
+<!-- Breadcrumb -->
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <a href="{% url 'packages' %}">
+      <span class="text-primary" style="color: rgb(84 123 182);">Packages</span>
+    </a>
 
-          <h1 class="h2 mt-2 mb-0">
-            {{ object.name }}
-          </h1>
-        </div>
+    <span class="breadcrumb-name"> / </span>
 
-        <span class="badge rounded-pill bg-secondary align-self-start">
-          {{ object.version }}
-        </span>
-      </div>
+    <!-- link back to latest -->
+    <a href="{% url 'package-details' slug=object.slug %}" class="text-decoration-none">
+      <span class="breadcrumb-name">{{ object.name }}</span>
+    </a>
+
+    {% if selected_version %}
+      <span class="breadcrumb-name"> / </span>
+      <span class="breadcrumb-name">{{ selected_version.version }}</span>
+    {% endif %}
+
+    <h1 class="h2 mt-2 mb-0">
+      {{ object.name }}
+    </h1>
+  </div>
+
+  <span class="badge rounded-pill bg-secondary align-self-start">
+    {% if selected_version %}v{{ selected_version.version }}{% else %}-{% endif %}
+  </span>
+</div>
 
       <div class="row g-3">
         <!-- LEFT COLUMN -->
@@ -54,15 +68,15 @@
             <div class="card-body">
               <h5 class="card-title mb-3">README</h5>
 
-              {% if object.readme %}
-                <div class="markdown-body">
-                  {{ object.readme|markdownify }}
-                </div>
-              {% else %}
-                <p class="mb-0 label-muted">
-                  No README has been uploaded for this package yet.
-                </p>
-              {% endif %}
+{% if selected_version and selected_version.readme %}
+  <div class="markdown-body">
+    {{ selected_version.readme|markdownify }}
+  </div>
+{% else %}
+  <p class="mb-0 label-muted">
+    No README has been uploaded for this package yet.
+  </p>
+{% endif %}
             </div>
           </div>
 
@@ -109,7 +123,7 @@
                        color:#b16d90;
                        font-family: monospace;
                      ">
-                  cpm download {{ object.name }}
+                  cpm install {{ object.name }}
                 </div>
 
                 <!-- copy button -->
@@ -132,10 +146,34 @@
           <!-- DOWNLOADS -->
           <div class="card card-dark text-light mt-3">
             <div class="card-body small">
-              <download-stats endpoint="{% url 'api:package-downloads' slug=object.slug %}"></download-stats>
-            </div>
+{% if selected_version %}
+  <download-stats endpoint="{% url 'api:package-version-downloads' slug=object.slug version=selected_version.version %}"></download-stats>
+{% else %}
+  <download-stats endpoint=""></download-stats>
+{% endif %}            </div>
           </div>
 
+        <div class="card card-dark text-light mt-3">
+  <div class="card-body small">
+    <h6 class="text-uppercase label-muted mb-3">Versions</h6>
+
+    {% if versions %}
+      <ul class="list-unstyled mb-0">
+        {% for v in versions %}
+          <li class="d-flex justify-content-between align-items-center py-1">
+            <a href="{% url 'package-version-details' slug=object.slug version=v.version %}"
+               class="text-decoration-none {% if selected_version and v.version == selected_version.version %}fw-semibold{% endif %}">
+              {{ v.version }}
+            </a>
+            <span class="label-muted">{{ v.created_at|date:"Y-m-d" }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="mb-0 label-muted">No versions uploaded yet.</p>
+    {% endif %}
+  </div>
+</div>
 
         </div> <!-- /RIGHT COLUMN -->
       </div> <!-- /row g-3 -->
